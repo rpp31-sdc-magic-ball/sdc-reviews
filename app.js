@@ -1,4 +1,5 @@
 const express = require("express");
+const db = require('./db/db.js')
 const app = express();
 
 app.get('/reviews/*', (req, res) => {
