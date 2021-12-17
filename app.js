@@ -6,4 +6,8 @@ app.get('/reviews/*', (req, res) => {
   res.send('Hello world');
 })
 
+db.Review.sync();
+db.Photo.sync();
+db.Characteristic.sync();
+
 module.exports = app;

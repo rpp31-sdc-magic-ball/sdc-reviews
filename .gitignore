@@ -1,3 +1,5 @@
 node_modules
 coverage
 authentication.js
+.DS_Store
+data
