@@ -9,5 +9,7 @@ app.get('/reviews/*', (req, res) => {
 db.Review.sync();
 db.Photo.sync();
 db.Characteristic.sync();
+db.tempCharacteristics.sync();
+db.tempCharacteristics_Reviews.sync();
 
 module.exports = app;
