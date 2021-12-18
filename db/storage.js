@@ -24,7 +24,7 @@ let createAndPopulateTables = () => {
           etl.populateTables();
         } else {
           // tables already populated, continue
-          console.log('tables appear to already be populated, skipping...')
+          console.log('tables appear to already be populated, skipping...');
         }
       });
   });

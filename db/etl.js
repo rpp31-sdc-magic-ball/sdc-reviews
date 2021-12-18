@@ -1,5 +1,14 @@
 const mysql = require('mysql');
-const authentication = require('../authentication.js')
+const path = require('path');
+const authentication = require('../authentication.js');
+
+// this module uses the 'mysql' module to connect to the mariaDB.  I use 'sequelize' elsewhere, but it does not
+// like to do local imports.  Neither does the 'mariadb' module.
+
+const reviews_path = path.join(__dirname, '../data/reviews.csv');
+const photos_path = path.join(__dirname, '../data/reviews_photos.csv');
+const characteristics_path = path.join(__dirname, '../data/characteristics.csv');
+const characteristic_reviews_path = path.join(__dirname, '../data/characteristic_reviews.csv');
 
 let populateTables = () => {
 
@@ -17,7 +26,7 @@ let populateTables = () => {
     // ETL for reviews table
 
     console.log('Starting import of data into reviews table...');
-    var reviewSQL = `load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/reviews.csv' into table reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (review_id, product_id, rating, @var, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) SET date = FROM_UNIXTIME(@var*0.001);`;
+    var reviewSQL = `load data local infile '${reviews_path}' into table reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (review_id, product_id, rating, @var, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) SET date = FROM_UNIXTIME(@var*0.001);`;
 
     con.query(reviewSQL, (err, result) => {
       if (err) throw err;
@@ -27,7 +36,7 @@ let populateTables = () => {
     // ETL for photos table
 
     console.log('Starting import of data into photos table...');
-    var photoSQL = `load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/reviews_photos.csv' into table photos fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (photo_id, review_id, url);`;
+    var photoSQL = `load data local infile '${photos_path}' into table photos fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (photo_id, review_id, url);`;
 
     con.query(photoSQL, (err, result) => {
       if (err) throw err;
@@ -36,9 +45,9 @@ let populateTables = () => {
 
     // ETL for characteristics
 
-    var tempCharSQL = `load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/characteristics.csv' into table tempCharacteristics fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, product_id, name);`;
+    var tempCharSQL = `load data local infile '${characteristics_path}' into table tempCharacteristics fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, product_id, name);`;
 
-    var tempCharRevSQL = `load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/characteristic_reviews.csv' into table tempCharacteristics_reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, characteristic_id, review_id, value);`;
+    var tempCharRevSQL = `load data local infile '${characteristic_reviews_path}' into table tempCharacteristics_reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, characteristic_id, review_id, value);`;
 
     var charRevJoinSQL = `INSERT INTO characteristics SELECT tempCharacteristics_reviews.id, tempCharacteristics_reviews.review_id, tempCharacteristics_reviews.characteristic_id, tempCharacteristics.product_id, tempCharacteristics.name, tempCharacteristics_reviews.value FROM tempCharacteristics INNER JOIN tempCharacteristics_reviews ON tempCharacteristics.id = tempCharacteristics_reviews.characteristic_id;`;
 
