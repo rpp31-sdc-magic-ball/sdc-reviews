@@ -2,10 +2,11 @@ const {Sequelize, DataTypes} = require('sequelize');
 const authentication = require('../authentication.js')
 const db = new Sequelize(authentication.database, authentication.username, authentication.password, {
   host: authentication.host,
-  dialect: 'mariadb'
+  dialect: 'mariadb',
+  dialectOptions: {
+    flags: 'local-infile=1'
+  }
 });
-
-//db.authenticate().then(() => {console.log('Connection has been established successfully.')});
 
 // Database Schemata
 let Review = db.define('reviews', {
@@ -64,20 +65,3 @@ let tempCharacteristics_Reviews = db.define('tempCharacteristics_reviews', {
 { timestamps: false});
 
 module.exports = {Review, Photo, Characteristic, tempCharacteristics, tempCharacteristics_Reviews};
-
-/**
-// Manual SQL commands to load data from CSV:
-//
-//
-
-load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/reviews.csv' into table reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (review_id, product_id, rating, @var, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) SET date = FROM_UNIXTIME(@var*0.001);
-
-load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/reviews_photos.csv' into table photos fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (photo_id, review_id, url);
-
-load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/characteristics.csv' into table tempCharacteristics fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, product_id, name);
-
-load data local infile '/Users/richardwatterson/Documents/Galvanize/SDC/reviews/sdc-reviews/data/characteristic_reviews.csv' into table tempCharacteristics_reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (id, characteristic_id, review_id, value);
-
-INSERT INTO characteristics SELECT tempCharacteristics_reviews.id, tempCharacteristics_reviews.review_id, tempCharacteristics_reviews.characteristic_id, tempCharacteristics.product_id, tempCharacteristics.name, tempCharacteristics_reviews.value FROM tempCharacteristics INNER JOIN tempCharacteristics_reviews ON tempCharacteristics.id = tempCharacteristics_reviews.characteristic_id;
-
-*/
