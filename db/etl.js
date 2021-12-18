@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const authentication = require('../authentication.js')
 
-let populateDatabases = () => {
+let populateTables = () => {
 
   var con = mysql.createConnection({
     host: authentication.host,
@@ -66,7 +66,7 @@ let populateDatabases = () => {
 
 };
 
-module.exports = { populateDatabases };
+module.exports = { populateTables };
 
 /**
 // Manual SQL commands to load data from CSV:

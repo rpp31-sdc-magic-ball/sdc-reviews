@@ -1,8 +1,9 @@
 const db = require('./db.js')
 const etl = require('./etl.js');
 
-let createAndPopulateDBS = () => {
+let createAndPopulateTables = () => {
 
+  // create tables (if not exist)
   let promises = [];
   promises.push(db.Review.sync());
   promises.push(db.Photo.sync());
@@ -11,10 +12,23 @@ let createAndPopulateDBS = () => {
   promises.push(db.tempCharacteristics_Reviews.sync());
   Promise.all(promises).then(() => {
 
-    etl.populateDatabases();
-
+    // when all tables are confirmed to be created
+    db.Review.findAll({
+      where: {
+        review_id: 1
+      }
+    })
+      .then((res) => {
+        if (res.length === 0) {
+          // if the first row in reviews table does not exist, populate tables
+          etl.populateTables();
+        } else {
+          // tables already populated, continue
+          console.log('tables appear to already be populated, skipping...')
+        }
+      });
   });
 
 };
 
-module.exports = {createAndPopulateDBS}
+module.exports = {createAndPopulateTables}
