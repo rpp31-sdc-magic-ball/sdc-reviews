@@ -31,4 +31,26 @@ let createAndPopulateTables = () => {
 
 };
 
+let readReviewsForProductId = (product_id, page, count, sort) {
+
+}
+
+let readReviewMetaForProductId = (product_id) {
+
+}
+
+let writeReview = (review) {
+
+}
+
+let markReviewHelpful = (review_id) {
+
+}
+
+let markReviewReported = (review_id) {
+
+}
+
+
+
 module.exports = {createAndPopulateTables}
