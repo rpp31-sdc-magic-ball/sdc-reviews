@@ -43,11 +43,10 @@ app.get('/reviews', (req, res) => {
     req.query.sort = 'relevant';
   }
 
-  // database access
-  // send results
-
-
-  res.sendStatus(201);
+  storage.readReviewsForProductId(req.query.product_id)
+    .then((result) => {
+      res.send(result);
+    });
 
 });
 

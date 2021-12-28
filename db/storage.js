@@ -31,26 +31,34 @@ let createAndPopulateTables = () => {
 
 };
 
-let readReviewsForProductId = (product_id, page, count, sort) {
+let readReviewsForProductId = (product_id, page, count, sort) => {
+
+  console.log(`getting reviews for ${product_id}...`);
+  // todo: handle no reviews, bad data
+  return db.Review.findAll({
+    where: {
+      product_id: product_id
+    }
+  });
 
 }
 
-let readReviewMetaForProductId = (product_id) {
+let readReviewMetaForProductId = (product_id) => {
 
 }
 
-let writeReview = (review) {
+let writeReview = (review) => {
 
 }
 
-let markReviewHelpful = (review_id) {
+let markReviewHelpful = (review_id) => {
 
 }
 
-let markReviewReported = (review_id) {
+let markReviewReported = (review_id) => {
 
 }
 
 
 
-module.exports = {createAndPopulateTables}
+module.exports = {createAndPopulateTables, readReviewsForProductId};
