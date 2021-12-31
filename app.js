@@ -30,7 +30,7 @@ app.get('/reviews', (req, res) => {
 
   // check for required parameter
   if (!('product_id' in req.query)) {
-    res.status(422).send('Error: no product_id provided');
+    return res.status(422).send('Error: no product_id provided');
   }
   // default parameters
   if (!('page' in req.query)) {
