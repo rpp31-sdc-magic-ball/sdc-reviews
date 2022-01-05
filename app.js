@@ -64,38 +64,8 @@ app.get('/reviews/meta', (req, res) => {
   }
 
   // database access / calculations
-  // send results
-
-  // ex:
-  // {
-  //   "product_id": "2",
-  //   "ratings": {
-  //     2: 1,
-  //     3: 1,
-  //     4: 2,
-  //     // ...
-  //   },
-  //   "recommended": {
-  //     0: 5
-  //     // ...
-  //   },
-  //   "characteristics": {
-  //     "Size": {
-  //       "id": 14,
-  //       "value": "4.0000"
-  //     },
-  //     "Width": {
-  //       "id": 15,
-  //       "value": "3.5000"
-  //     },
-  //     "Comfort": {
-  //       "id": 16,
-  //       "value": "4.0000"
-  //     },
-  //     // ...
-  // }
-
-  res.sendStatus(201);
+  storage.readReviewMetaForProductId(req.query.product_id)
+    .then(meta => res.send(meta));
 
 });
 
@@ -114,7 +84,7 @@ app.get('/reviews/meta', (req, res) => {
 
 app.post('/reviews', (req, res) => {
 
-  console.log('Accepting POST request to /reviews/meta, body: ', req.body);
+  console.log('Accepting POST request to /reviews, body: ', req.body);
 
   // database access, save review
 
