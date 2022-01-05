@@ -26,7 +26,7 @@ let populateTables = () => {
     // ETL for reviews table
 
     console.log('Starting import of data into reviews table...');
-    var reviewSQL = `load data local infile '${reviews_path}' into table reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (review_id, product_id, rating, @var, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) SET date = FROM_UNIXTIME(@var*0.001);`;
+    var reviewSQL = `load data local infile '${reviews_path}' into table reviews fields terminated by ',' enclosed by '"' lines terminated by '\n' ignore 1 lines (review_id, product_id, rating, @var, summary, body, @var2, @var3, reviewer_name, reviewer_email, response, helpfulness) SET date = FROM_UNIXTIME(@var*0.001), recommend = (@var2 = 'true'), reported = (@var3 = 'true');`;
 
     con.query(reviewSQL, (err, result) => {
       if (err) throw err;

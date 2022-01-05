@@ -21,7 +21,7 @@ let Review = db.define('reviews', {
   body: DataTypes.STRING,
   date: DataTypes.DATE,
   helpfulness: DataTypes.INTEGER,
-  reported: DataTypes.INTEGER
+  reported: DataTypes.BOOLEAN
 },
 { timestamps: false });
 
