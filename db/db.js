@@ -10,7 +10,7 @@ const db = new Sequelize(authentication.database, authentication.username, authe
 
 // Database Schemata
 let Review = db.define('reviews', {
-  review_id: {type: DataTypes.INTEGER, primaryKey: true},
+  review_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   product_id: DataTypes.INTEGER,
   rating: DataTypes.INTEGER,
   summary: DataTypes.STRING,
@@ -26,14 +26,14 @@ let Review = db.define('reviews', {
 { timestamps: false });
 
 let Photo = db.define('photos', {
-  photo_id: {type: DataTypes.INTEGER, primaryKey: true},
+  photo_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   review_id: DataTypes.INTEGER,
   url: DataTypes.STRING
 },
 { timestamps: false });
 
 let Characteristic = db.define('characteristics', {
-  table_id: {type: DataTypes.INTEGER, primaryKey: true},
+  table_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   review_id: DataTypes.INTEGER,
   characteristic_id: DataTypes.INTEGER,
   product_id: DataTypes.INTEGER,
