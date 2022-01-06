@@ -263,9 +263,8 @@ let markReviewHelpful = (review_id) => {
 }
 
 let markReviewReported = (review_id) => {
-  return db.Review.update({reported: 1}, where: {review_id: review_id});
+  return db.Review.update({reported: 1}, {where: {review_id: review_id}});
 }
 
 
-*/
 module.exports = {createAndPopulateTables, readReviewsForProductId, readReviewMetaForProductId, writeReview, markReviewHelpful, markReviewReported};
