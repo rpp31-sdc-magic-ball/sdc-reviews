@@ -49,6 +49,36 @@ let readReviewsForProductId = (product_id, page, count, sort) => {
     }
     return formattedResults;
   })
+  .then(reviews => {
+    //get photos
+    let photoPromises = reviews.map(review => {
+      // get photos for each review
+      return db.Photo.findAll({
+        where: {
+          review_id: review.review_id
+        }
+      });
+    });
+    return Promise.all(photoPromises)
+      .then(rawPhotos => {
+        // get relevant data from photo results and add to review
+        let formattedReviews = [];
+        for (let i = 0; i < reviews.length; i++) {
+          for (let j = 0; j < rawPhotos[i].length; j++) {
+            let photoObject = {
+              id: rawPhotos[i][j].photo_id,
+              url: rawPhotos[i][j].url
+            };
+            if (!('photos' in reviews[i])) {
+              reviews[i].photos = [photoObject];
+            } else {
+              reviews[i].photos.push(photoObject);
+            }
+          }
+        }
+        return reviews;
+      });
+  })
 
 };
 
