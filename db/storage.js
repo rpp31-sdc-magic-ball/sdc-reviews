@@ -163,11 +163,99 @@ let readReviewMetaForProductId = (product_id) => {
 
 };
 
-/*
-let writeReview = (review) => {
 
+let writeReview = (review) => {
+  // required fields:
+  // product_id
+  // rating
+  // summary
+  // body
+  // recommend
+  // name
+  // email
+  // photos
+  // characteristics
+  /*
+    review_id: {type: DataTypes.INTEGER, primaryKey: true},
+  product_id: DataTypes.INTEGER,
+  rating: DataTypes.INTEGER,
+  summary: DataTypes.STRING,
+  recommend: DataTypes.BOOLEAN,
+  reviewer_name: DataTypes.STRING,
+  reviewer_email: DataTypes.STRING,
+  response: DataTypes.STRING,
+  body: DataTypes.STRING,
+  date: DataTypes.DATE,
+  helpfulness: DataTypes.INTEGER,
+  reported: DataTypes.BOOLEAN
+  */
+  if (
+    ('product_id' in review) &&
+    ('rating' in review) &&
+    ('summary' in review) &&
+    ('body' in review) &&
+    ('recommend' in review) &&
+    ('name' in review) &&
+    ('email' in review)) {
+      let formattedReview = {
+        product_id: review.product_id,
+        rating: review.rating,
+        summary: review.summary,
+        recommend: review.recommend,
+        reviewer_name: review.name,
+        reviewer_email: review.email,
+        response: '',
+        body: review.body,
+        date: Date.now(),
+        helpfulness: 0,
+        reported: 0
+      };
+      return db.Review.create(formattedReview)
+        .then((result) => result.dataValues.review_id)
+        .then((review_id) => {
+          let photoAndCharacteristicWritePromises = [];
+          if ('photos' in review && review.photos instanceof Array && review.photos.length > 0) {
+            for (let i = 0; i < review.photos.length; i++) {
+              let formattedPhoto = {
+                review_id: review_id,
+                url: review.photos[i]
+              }
+              photoAndCharacteristicWritePromises.push(db.Photo.create(formattedPhoto));
+            }
+          }
+          if ('characteristics' in review && review.characteristics instanceof Object) {
+            for (key in review.characteristics) {
+              let formattedCharacteristic = {
+                review_id: review_id,
+                characteristic_id: key,
+                product_id: review.product_id,
+                value: review.characteristics[key]
+              }
+              photoAndCharacteristicWritePromises.push(
+                db.Characteristic.findOne({
+                  where: {
+                    characteristic_id: key
+                  }
+                })
+                  .then(matchingCharacteristic => {
+                    return matchingCharacteristic.dataValues.characteristic_name;
+                  })
+                  .then(characteristic_name => {
+                    formattedCharacteristic.characteristic_name = characteristic_name;
+                    return db.Characteristic.create(formattedCharacteristic);
+                  })
+              );
+            }
+          }
+          return Promise.all(photoAndCharacteristicWritePromises);
+        })
+        .catch((err) => console.error(err));
+    } else {
+      return new Error('Review missing required parameter(s)');
+    }
 }
 
+/*
 let markReviewHelpful = (review_id) => {
 
 }
@@ -178,4 +266,4 @@ let markReviewReported = (review_id) => {
 
 
 */
-module.exports = {createAndPopulateTables, readReviewsForProductId, readReviewMetaForProductId};
+module.exports = {createAndPopulateTables, readReviewsForProductId, readReviewMetaForProductId, writeReview};

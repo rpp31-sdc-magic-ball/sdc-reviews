@@ -87,8 +87,8 @@ app.post('/reviews', (req, res) => {
   console.log('Accepting POST request to /reviews, body: ', req.body);
 
   // database access, save review
-
-  res.sendStatus(201);
+  storage.writeReview(req.body)
+    .then(() => res.sendStatus(201));
 
 });
 
