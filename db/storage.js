@@ -255,15 +255,17 @@ let writeReview = (review) => {
     }
 }
 
-/*
+
 let markReviewHelpful = (review_id) => {
+  //todo: make sure helpful is not null, possibly change database schema?
+  return db.Review.increment({helpful: 1}, {where: {review_id: review_id}});
 
 }
 
 let markReviewReported = (review_id) => {
-
+  return db.Review.update({reported: 1}, where: {review_id: review_id});
 }
 
 
 */
-module.exports = {createAndPopulateTables, readReviewsForProductId, readReviewMetaForProductId, writeReview};
+module.exports = {createAndPopulateTables, readReviewsForProductId, readReviewMetaForProductId, writeReview, markReviewHelpful, markReviewReported};

@@ -99,8 +99,8 @@ app.put('/reviews/:review_id/helpful', (req, res) => {
   console.log('Marking review as helpful: ', req.params.review_id);
 
   // database access, update review
-
-  res.sendStatus(204);
+  storage.markReviewHelpful(req.params.review_id)
+    .then(res.sendStatus(204));
 
 });
 
@@ -111,8 +111,8 @@ app.put('/reviews/:review_id/report', (req, res) => {
   console.log('Reporting review: ', req.params.review_id);
 
   // database access, update review
-
-  res.sendStatus(204);
+  storage.markReviewReported(req.params.review_id)
+    .then(res.sendStatus(204));
 
 });
 
