@@ -3,10 +3,10 @@ import { sleep } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '30s', target: 10 }, // below normal load
-    { duration: '30s', target: 20 }, // normal load
-    { duration: '10s', target: 30 }, // around the breaking point
-    { duration: '10s', target: 40 }, // beyond the breaking point
+    { duration: '30s', target: 1 }, // 1 rps (actually 2 rps)
+    { duration: '30s', target: 5 }, // 10 rps
+    { duration: '30s', target: 50 }, // 100 rps
+    { duration: '30s', target: 500 }, // 1000 rps
     { duration: '1m', target: 0 }, // scale down. Recovery stage.
   ],
 };
