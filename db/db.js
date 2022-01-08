@@ -23,14 +23,26 @@ let Review = db.define('reviews', {
   helpfulness: DataTypes.INTEGER,
   reported: DataTypes.BOOLEAN
 },
-{ timestamps: false });
+{
+  timestamps: false,
+  indexes: [{
+    unique: false,
+    fields: ['product_id']
+  }]
+});
 
 let Photo = db.define('photos', {
   photo_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
   review_id: DataTypes.INTEGER,
   url: DataTypes.STRING
 },
-{ timestamps: false });
+{
+  timestamps: false,
+  indexes: [{
+    unique: false,
+    fields: ['review_id']
+  }]
+});
 
 let Characteristic = db.define('characteristics', {
   table_id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
@@ -40,7 +52,13 @@ let Characteristic = db.define('characteristics', {
   characteristic_name: DataTypes.STRING,
   value: DataTypes.STRING
 },
-{ timestamps: false });
+{
+  timestamps: false,
+  indexes: [{
+    unique: false,
+    fields: ['product_id']
+  }]
+});
 
 Review.hasMany(Photo, {foreignKey: 'review_id'});
 Photo.belongsTo(Review, {foreignKey: 'review_id'});
