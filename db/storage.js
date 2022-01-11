@@ -35,20 +35,7 @@ let readReviewsForProductId = (product_id, page, count, sort) => {
 
   //console.log(`getting reviews for ${product_id}...`);
   // todo: handle no reviews, bad data
-  return db.Review.findAll({
-    where: {
-      product_id: product_id
-    }
-  })
-  .then(result => {
-    // todo: sanity checks
-    // strip SQL formatting of results
-    let formattedResults = [];
-    for (let i = 0; i < result.length; i++) {
-      formattedResults.push(result[i].dataValues);
-    }
-    return formattedResults;
-  })
+  return readReviewsForProductIdNoPhotos(product_id)
   .then(reviews => {
     //get photos
     let photoPromises = reviews.map(review => {
@@ -82,11 +69,31 @@ let readReviewsForProductId = (product_id, page, count, sort) => {
 
 };
 
+let readReviewsForProductIdNoPhotos = (product_id) => {
+
+  // todo: handle no reviews, bad data
+  return db.Review.findAll({
+    where: {
+      product_id: product_id
+    }
+  })
+  .then(result => {
+    // todo: sanity checks
+    // strip SQL formatting of results
+    let formattedResults = [];
+    for (let i = 0; i < result.length; i++) {
+      formattedResults.push(result[i].dataValues);
+    }
+    return formattedResults;
+  });
+
+}
+
 let readReviewMetaForProductId = (product_id) => {
 
   let promises = [];
 
-  promises.push(readReviewsForProductId(product_id)
+  promises.push(readReviewsForProductIdNoPhotos(product_id)
     .then(result => {
       if (!(result instanceof Array)) {
         throw new Error(`No results for product_id ${product_id}, can't calculate meta`);
