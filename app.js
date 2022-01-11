@@ -17,7 +17,7 @@ storage.createAndPopulateTables();
 // Auth Endpoint for loader.io
 //
 
-app.get(authentication.loaderio, (req, res) => {
+app.get('/' + authentication.loaderio, (req, res) => {
   res.send(authentication.loaderio);
 })
 
