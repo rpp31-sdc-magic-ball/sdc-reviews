@@ -3,9 +3,10 @@ const authentication = require('../authentication.js')
 const db = new Sequelize(authentication.database, authentication.username, authentication.password, {
   host: authentication.host,
   dialect: 'mariadb',
+  logging: false,
   dialectOptions: {
     flags: 'local-infile=1'
-  }
+  },
 });
 
 // Database Schemata

@@ -33,7 +33,7 @@ let createAndPopulateTables = () => {
 
 let readReviewsForProductId = (product_id, page, count, sort) => {
 
-  console.log(`getting reviews for ${product_id}...`);
+  //console.log(`getting reviews for ${product_id}...`);
   // todo: handle no reviews, bad data
   return db.Review.findAll({
     where: {

@@ -26,7 +26,7 @@ storage.createAndPopulateTables();
 
 app.get('/reviews', (req, res) => {
 
-  console.log('Accepting GET request to /reviews, query: ', req.query);
+  //console.log('Accepting GET request to /reviews, query: ', req.query);
 
   // check for required parameter
   if (!('product_id' in req.query)) {
@@ -56,7 +56,7 @@ app.get('/reviews', (req, res) => {
 
 app.get('/reviews/meta', (req, res) => {
 
-  console.log('Accepting GET request to /reviews/meta, query: ', req.query);
+  //console.log('Accepting GET request to /reviews/meta, query: ', req.query);
 
   //check for required parameter
   if (!('product_id' in req.query)) {
