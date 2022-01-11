@@ -9,8 +9,17 @@ app.use(express.json());  // for POST requests with JSON in the body
 
 
 const storage = require('./db/storage.js');
+const authentication = require('./authentication.js');
 
 storage.createAndPopulateTables();
+
+//
+// Auth Endpoint for loader.io
+//
+
+app.get(authentication.loaderio, (req, res) => {
+  res.send(authentication.loaderio);
+})
 
 //
 // Endpoints
