@@ -1,5 +1,6 @@
 const db = require('./db.js')
 const etl = require('./etl.js');
+const Sequelize = require('sequelize');
 
 let createAndPopulateTables = () => {
 
@@ -91,82 +92,81 @@ let readReviewsForProductIdNoPhotos = (product_id) => {
 
 let readReviewMetaForProductId = (product_id) => {
 
-  let promises = [];
+  //let promises = [];
 
-  promises.push(readReviewsForProductIdNoPhotos(product_id)
-    .then(result => {
-      if (!(result instanceof Array)) {
-        throw new Error(`No results for product_id ${product_id}, can't calculate meta`);
-      }
-      // construct metadata from product reviews
-      let meta = {};
-      meta.product_id = product_id;
-      meta.ratings = {};
-      meta.recommended = {};
-      for (let i = 0; i < result.length; i++) {
-        if ('rating' in result[i]) {
-          // count instances of each rating value
-          if (result[i].rating in meta.ratings) {
-            meta.ratings[result[i].rating]++;
-          } else {
-            meta.ratings[result[i].rating] = 1;
-          }
-        }
-        if ('recommend' in result[i]) {
-          // count 'true' and 'false' recommend values
-          if (result[i].recommend in meta.recommended) {
-            meta.recommended[result[i].recommend]++;
-          } else {
-            meta.recommended[result[i].recommend] = 1;
-          }
-        }
-      }
-      return meta;
-    }));
+  let newPromises = [];
 
-  promises.push(db.Characteristic.findAll({
-    where: {
-      product_id: product_id
-    }
-  })
-    .then(rawResult => {
-      // strip SQL formatting of results
-      let formattedResult = [];
-      for (let i = 0; i < rawResult.length; i++) {
-        formattedResult.push(rawResult[i].dataValues);
-      }
-      return formattedResult;
+  // calculate rating
+  newPromises.push(db.Review.findAll({
+      where: { product_id: product_id },
+      attributes: ['rating', [Sequelize.fn('count', Sequelize.col('rating')), 'count']],
+      group: ['rating']
     })
     .then(result => {
-      // sum all ratings for each characteristic, and total rating count
-      let characteristics = {};
+      // todo: sanity checks
+      // strip SQL formatting of results, transform into object format
+      let formattedResults = {};
       for (let i = 0; i < result.length; i++) {
-        if (result[i].characteristic_name in characteristics) {
-          characteristics[result[i].characteristic_name].sum += Number(result[i].value);
-          characteristics[result[i].characteristic_name].num++;
-        } else {
-          characteristics[result[i].characteristic_name] = {
-            id: result[i].characteristic_id,
-            sum: Number(result[i].value),
-            num: 1
-          };
-        }
+        formattedResults[result[i].dataValues.rating] = result[i].dataValues.count;
       }
-      // divide sum of ratings by total rating count to get average rating per characteristic
-      for (name in characteristics) {
-        characteristics[name].value = characteristics[name].sum / characteristics[name].num;
-        delete characteristics[name].sum;
-        delete characteristics[name].num;
+      return formattedResults;
+    })
+    .catch(err => console.log(err))
+  );
+
+  // calculate recommendation
+  newPromises.push(db.Review.findAll({
+    where: { product_id: product_id },
+    attributes: ['recommend', [Sequelize.fn('count', Sequelize.col('recommend')), 'count']],
+    group: ['recommend']
+  })
+    .then(result => {
+      // todo: sanity checks
+      // strip SQL formatting of results, transform into object format
+      let formattedResults = {};
+      for (let i = 0; i < result.length; i++) {
+        formattedResults[result[i].dataValues.recommend] = result[i].dataValues.count;
       }
+      return formattedResults;
+    })
+    .catch(err => console.log(err))
+  );
 
-      return characteristics;
-    }));
+  // calculate characteristics
+  newPromises.push(db.Characteristic.findAll({
+    where: { product_id: product_id },
+    attributes: [
+      'characteristic_id',
+      'characteristic_name',
+      [Sequelize.fn('sum', Sequelize.col('value')), 'sum'],
+      [Sequelize.fn('count', Sequelize.col('characteristic_id')), 'count']
+    ],
+    group: ['characteristic_id', 'characteristic_name']
+  })
+  .then(result => {
+    // todo: sanity checks
+    // strip SQL formatting of results, transform into object format
+    let formattedResults = {};
+    for (let i = 0; i < result.length; i++) {
+      formattedResults[result[i].dataValues.characteristic_name] = {
+        id: result[i].dataValues.characteristic_id,
+        value: result[i].dataValues.sum / result[i].dataValues.count
+      };
+    }
+    return formattedResults;
+  })
+  .catch(err => console.log(err))
+  );
 
-    // when meta from reviews table and meta from characteristics table resolve, combine and return
-    return Promise.all(promises).then(results => {
-      results[0].characteristics = results[1];
-      return results[0];
-    });
+  return Promise.all(newPromises)
+    .then(results => {
+      let meta = {};
+      meta.product_id = product_id;
+      meta.ratings = results[0];
+      meta.recommended = results[1];
+      meta.characteristics = results[2];
+      return meta;
+    })
 
 };
 
