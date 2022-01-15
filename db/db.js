@@ -2,6 +2,7 @@ const {Sequelize, DataTypes} = require('sequelize');
 const authentication = require('../authentication.js')
 const db = new Sequelize(authentication.database, authentication.username, authentication.password, {
   host: authentication.host,
+  port: authentication.port,
   dialect: 'mariadb',
   logging: false,
   dialectOptions: {
